@@ -12,11 +12,14 @@ DeleteHandler
 
 postRouter.route("/")
   .post(PostHandler)     
-  .get(GetallHandler); 
+  .get(GetallHandler)  
+  .put(UpdateHandler) 
+  .delete(DeleteHandler)
 
-postRouter.route("/:id")
-  .get(ReadHandler)      
-  .patch(UpdateHandler) 
-  .delete(DeleteHandler);
+
+// postRouter.route("/:id")
+//   .get(ReadHandler)      
+//   .put(UpdateHandler) 
+//   .delete(DeleteHandler);
 
   module.exports = postRouter;

@@ -1,10 +1,11 @@
 const mongoose = require("mongoose")
 
 
-const create = mongoose.model("create",{
+const mytask = mongoose.model("mytask",{
   title:String,
   starttime:String,
   endtime:String,
+  completed:Boolean,
   
   
 
@@ -14,4 +15,4 @@ const create = mongoose.model("create",{
 )
 
 
-module.exports = create;
+module.exports = mytask;
