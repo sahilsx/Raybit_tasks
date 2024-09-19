@@ -1,7 +1,7 @@
 const Sign = require("../../models/signmd");
 const bcrypt = require("bcryptjs");
-const mongoose = require("mongoose")
-
+const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 
 
 const signHandler = async (req, res) => {
@@ -51,7 +51,15 @@ const isUser = await Sign.findOne({ email });
 if(isUser){
  const passVerify = await bcrypt.compare(password, isUser.password);
  if(passVerify){
-    res.json({message:"Your are Logged in Successfully! Now Enjoy unlimited access....."})
+    
+ 
+    const token = jwt.sign(
+      {
+        _id: isUser._id,
+      },
+      "bringiton"
+    );
+    res.json({message:"Your are Logged in Successfully! Now Enjoy unlimited access.....",token})
  }else{
     res.json({message:"Password Is Incorrect....Try With a Valid One!!"})
  }
