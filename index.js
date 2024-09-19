@@ -41,7 +41,13 @@ const {signHandler,loginHandler} = require("./controller/logincontroller/login")
     limit :"50mb"
  }))
  app.use(morgan('dev'))
-app.use(cors())
+app.use(cors({
+ origin :"http://localhost:5173" || "*",
+ methods:["GET","PUT","DELETE","POST"],
+ credentials:true,
+}
+  
+))
  Db();
   app.post("/signup",signHandler)
   app.post("/login",loginHandler)
