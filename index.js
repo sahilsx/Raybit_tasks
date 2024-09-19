@@ -30,14 +30,21 @@ const express = require ("express");
 const Db = require("./utils/mongo");
  const postRouter=require("./Routes/postroutes")
  const bodyParser =require("body-parser")
- const cors = require("cors")
+ const morgan = require("morgan")
+ const cors = require("cors");
+const {signHandler,loginHandler} = require("./controller/logincontroller/login");
  const app = express();
  const port = 4000;
  app.use(express.json())
- app.use(bodyParser.json())
+ app.use(bodyParser.json({
+    extended: true,
+    limit :"50mb"
+ }))
+ app.use(morgan('dev'))
 app.use(cors())
  Db();
-
- app.use("/api/product", postRouter);
+  app.post("/signup",signHandler)
+  app.post("/login",loginHandler)
+//  app.use("/api/product", postRouter);
 
  app.listen(port, console.log(`server conected on localhost : ${port} `));

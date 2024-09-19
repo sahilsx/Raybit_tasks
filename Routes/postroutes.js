@@ -1,25 +1,22 @@
-const postRouter = require("express").Router();
+// const postRouter = require("express").Router();
 
 
 
-const{
-PostHandler,
-ReadHandler,
-GetallHandler,
-UpdateHandler,
-DeleteHandler
-}=require("../controller/all")
+// const{
+// PostHandler,
+// ReadHandler,
+// GetallHandler,
+// UpdateHandler,
+// DeleteHandler
+// }=require("../controller/postcontroller/all")
 
-postRouter.route("/")
-  .post(PostHandler)     
-  .get(GetallHandler)  
-  .put(UpdateHandler) 
-  .delete(DeleteHandler)
-
-
-// postRouter.route("/:id")
-//   .get(ReadHandler)      
+// postRouter.route("/")
+//   .post(PostHandler)     
+//   .get(GetallHandler)  
 //   .put(UpdateHandler) 
-//   .delete(DeleteHandler);
+//   .delete(DeleteHandler)
 
-  module.exports = postRouter;
+
+
+
+//   module.exports = postRouter;
