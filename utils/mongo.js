@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 
 
-const url ="mongodb://localhost:27017/create"
+const url ="mongodb+srv://sahilsahil0901:sahilsss@cluster0.heqeg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 
 
