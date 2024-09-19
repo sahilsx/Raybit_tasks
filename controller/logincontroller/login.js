@@ -75,4 +75,15 @@ if(isUser){
 }
 
 
-module.exports = {signHandler, loginHandler};
+
+
+
+const getusers = async (req,res)=>{
+
+const user = await Sign.find()
+res.json({user})
+
+}
+
+
+module.exports = {signHandler, loginHandler,getusers};

@@ -32,7 +32,7 @@ const Db = require("./utils/mongo");
  const bodyParser =require("body-parser")
  const morgan = require("morgan")
  const cors = require("cors");
-const {signHandler,loginHandler} = require("./controller/logincontroller/login");
+const {signHandler,loginHandler,getusers} = require("./controller/logincontroller/login");
  const app = express();
  const port = 4000;
  app.use(express.json())
@@ -51,6 +51,7 @@ app.use(cors({
  Db();
   app.post("/signup",signHandler)
   app.post("/login",loginHandler)
+  app.get("/get",getusers)
 //  app.use("/api/product", postRouter);
 
  app.listen(port, console.log(`server conected on localhost : ${port} `));
