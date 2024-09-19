@@ -59,13 +59,17 @@ if(isUser){
       },
       "bringiton"
     );
-    res.json({message:"Your are Logged in Successfully! Now Enjoy unlimited access.....",token})
+    res.cookie('token', token, {
+      // httpOnly: true,
+      maxAge: 3 * 60 * 1000,
+    });
+     return  res.json({message:"Your are Logged in Successfully! Now Enjoy unlimited access.....",token})
  }else{
-    res.json({message:"Password Is Incorrect....Try With a Valid One!!"})
+   return res.json({message:"Password Is Incorrect....Try With a Valid One!!"})
  }
 
 }else{
- res.json({message:"No User Found! Email Doesn't Exists"})
+return res.json({message:"No User Found! Email Doesn't Exists"})
 }
 
 
