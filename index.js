@@ -33,6 +33,7 @@ const Db = require("./utils/mongo");
  const morgan = require("morgan")
  const cors = require("cors");
 const {signHandler,loginHandler,getusers} = require("./controller/logincontroller/login");
+const {TaskAddHandler,getmytasks} = require("./controller/taskcontroller/mytasks");
  const app = express();
  const port = 4000;
  app.use(express.json())
@@ -41,17 +42,16 @@ const {signHandler,loginHandler,getusers} = require("./controller/logincontrolle
     limit :"50mb"
  }))
  app.use(morgan('dev'))
-app.use(cors({
- origin :"http://localhost:5173" || "*",
- methods:["GET","PUT","DELETE","POST"],
- credentials:true,
-}
+app.use(cors(
+ 
   
 ))
  Db();
   app.post("/signup",signHandler)
   app.post("/login",loginHandler)
   app.get("/get",getusers)
+  app.post("/create",TaskAddHandler)
+  app.get("/getall",getmytasks)
 //  app.use("/api/product", postRouter);
 
  app.listen(port, console.log(`server conected on localhost : ${port} `));

@@ -1,18 +1,27 @@
-const mongoose = require("mongoose")
-
-
-const task = mongoose.model("task",{
-  title:String,
-  starttime:String,
-  endtime:String,
-  completed:Boolean,
-  
-  
+const mongoose = require ("mongoose")
 
 
 
-}
-)
 
+const taskschema = new mongoose.Schema({
+    tasktitle:{
+        type:String,
+        required:[true, "please add a title"]
+    },
+   
+    taskamount:{
+        type:Number,
+        required:[true, "please add a amount"]
+    },
+    taskdate:{
+        type:String,
+        required:[true, "please add a date"]
+    },
+   
+    
+})
+
+
+const task = mongoose.model("task",taskschema)
 
 module.exports = task;
