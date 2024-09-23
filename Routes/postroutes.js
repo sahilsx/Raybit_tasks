@@ -1,22 +1,19 @@
-// const postRouter = require("express").Router();
+
+const postRouter = require("express").Router();
+
+
+const{
+    TaskAddHandler,
+    getmytasks
+}=require("../controller/taskcontroller/mytasks")
 
 
 
-// const{
-// PostHandler,
-// ReadHandler,
-// GetallHandler,
-// UpdateHandler,
-// DeleteHandler
-// }=require("../controller/postcontroller/all")
-
-// postRouter.route("/")
-//   .post(PostHandler)     
-//   .get(GetallHandler)  
-//   .put(UpdateHandler) 
-//   .delete(DeleteHandler)
+postRouter.route("/")
+     .post(TaskAddHandler)
+     .get(getmytasks)
 
 
 
 
-//   module.exports = postRouter;
+module.exports=postRouter;

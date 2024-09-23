@@ -5,7 +5,7 @@ const Task = require('../../models/task');
 
 
 
-const TaskAddHandler = async (req, res) => {
+exports.TaskAddHandler = async (req, res) => {
     const {tasktitle, taskamount , taskdate} = req.body;
     console.log(req.body)
     const newTask = new Task({
@@ -24,7 +24,7 @@ const TaskAddHandler = async (req, res) => {
 }
 
 
-const getmytasks = async (req, res) => {
+exports.getmytasks = async (req, res) => {
     try {
         const tasks = await Task.find();
         res.status(200).json({message: "success", tasks});
@@ -36,4 +36,3 @@ const getmytasks = async (req, res) => {
 
 
 
-module.exports = {TaskAddHandler,getmytasks};

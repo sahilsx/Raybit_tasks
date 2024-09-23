@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
+const env = require("dotenv").config()
 
-
-const url ="mongodb+srv://sahilsahil0901:sahilsss@cluster0.heqeg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+const url =process.env.MONGO_URL || "mongodb://localhost:27017/ecommerce"
 
 
 
