@@ -6,7 +6,7 @@ const{
     getusers
 }=require("../controller/usercontroller/user"); 
 
-UserRouter.post("/",signHandler)
+UserRouter.route("/",signHandler)
            .post("/signup",signHandler)
            .post("/login",loginHandler)
            .get("/get",getusers)
