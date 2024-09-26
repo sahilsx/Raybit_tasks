@@ -109,7 +109,7 @@ exports.forgotPasswordHandler = async (req, res) => {
         );
 
         
-        const resetUrl = `http://localhost:4000/reset-password?token=${token}`;
+        const resetUrl = `http://localhost:3000/resetpassword?token=${token}`;
 
         
         await sendEmail(
