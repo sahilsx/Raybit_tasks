@@ -1,7 +1,4 @@
 
-
-
-
 const jwt = require('jsonwebtoken');
 const { sendEmail } = require('../../utils/Nodemail');
 const User = require('../../models/mymodel');
@@ -131,6 +128,8 @@ exports.forgotPasswordHandler = async (req, res) => {
 exports.resetPasswordHandler = async (req, res) => {
     const { token } = req.query;
     const { newPassword } = req.body;
+    console.log(req.body);
+    console.log(req.query);
 
     try {
        
@@ -153,21 +152,25 @@ exports.resetPasswordHandler = async (req, res) => {
         }
 
         
-        if (newPassword.length < 8) {
-            return res.status(400).json({ error: 'Password must be at least 8 characters long' });
+        if (newPassword.length < 6) {
+            return res.status(400).json({ error: 'Password must be at least 6 characters long' });
         }
 
       
         
-
+        const isMatch = await user.comparePassword(newPassword);
        
+
+        if (isMatch) {
+            return res.status(400).json({ error: 'New password cannot be the same as the old password' });
+        }
         user.password = newPassword;
         await user.save();
 
      
 
      
-        res.status(200).json({ message: 'Password reset successfully' });
+        res.status(200).json({ message: 'Password updated successfully' });
     } catch (error) {
         
         console.error('Error resetting password:', error);
