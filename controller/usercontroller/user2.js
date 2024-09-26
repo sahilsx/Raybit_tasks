@@ -26,7 +26,7 @@ exports.UsersHandler = async (req, res) => {
             maxAge: 3 * 60 * 1000,
           });
         const { password: omittedPassword, ...userWithoutPassword } = user.get({ plain: true });
-        res.status(201).json(userWithoutPassword,token);
+        res.status(201).json(userWithoutPassword);
     } catch (error) {
         const errorMessage = error.errors ? error.errors.map(err => err.message) : error.message;
         res.status(400).json({ error: errorMessage });
