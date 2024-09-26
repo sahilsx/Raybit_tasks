@@ -16,9 +16,17 @@ exports.UsersHandler = async (req, res) => {
             password
         });
 
-        
+        const token = jwt.sign(
+            {
+              _id: user._id,
+            },
+            SECRET_KEY
+          );
+          res.cookie("token", token, {       
+            maxAge: 3 * 60 * 1000,
+          });
         const { password: omittedPassword, ...userWithoutPassword } = user.get({ plain: true });
-        res.status(201).json(userWithoutPassword);
+        res.status(201).json(userWithoutPassword,token);
     } catch (error) {
         const errorMessage = error.errors ? error.errors.map(err => err.message) : error.message;
         res.status(400).json({ error: errorMessage });
@@ -49,8 +57,17 @@ exports.LoginHandler = async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ error: 'Invalid password' });
         }   
+        const token = jwt.sign(
+            {
+              _id: user._id,
+            },
+            SECRET_KEY
+          );
+          res.cookie("token", token, {       
+            maxAge: 3 * 60 * 1000,
+          });
         const { password: omittedPassword, ...userWithoutPassword } = user.get({ plain: true });
-        res.status(200).json(userWithoutPassword);
+        res.status(200).json({ message:"Logged in successfully",userWithoutPassword,token});
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
     }
