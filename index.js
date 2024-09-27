@@ -8,7 +8,7 @@ const Db = require("./utils/mongo");
  const cors = require("cors");
  const dotenv = require("dotenv").config({path: "./.env"});
  const {sequelize,connectToDatabase} = require("./utils/mysql");
- 
+ const AdminRoutes = require("./Routes/adminroutes");
 const CrudRouter = require("./Routes/crudroutes");
 const UserRouter = require("./Routes/userroutes");
 const UUserRoutes = require("./Routes/user2routes");
@@ -36,5 +36,6 @@ connectToDatabase();
  app.use("/crud",CrudRouter)
  app.use("/product", postRouter);
  app.use("/user2", UUserRoutes)
+ app.use("/admin", AdminRoutes)
 
  app.listen(port, console.log(`server conected on localhost : ${port} `));
