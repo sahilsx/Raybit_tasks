@@ -1,5 +1,4 @@
 
-
 const express = require ("express");
 const Db = require("./utils/mongo");
  const postRouter=require("./Routes/postroutes")
@@ -14,24 +13,27 @@ const UserRouter = require("./Routes/userroutes");
 const UUserRoutes = require("./Routes/user2routes");
  const app = express();
  const port = process.env.PORT;
+
+
+
+
+
+
  app.use(express.json())
- app.use(bodyParser.json({
-    
+ app.use(bodyParser.json({  
+    limit: '50mb'
  }))
- 
  app.use(morgan('dev'))
-app.use(cors(
- 
-  
-))
-
-
-
+app.use(cors())
 connectToDatabase();
+Db();
 
 
 
- Db();
+
+
+
+
  app.use("/user",UserRouter)
  app.use("/crud",CrudRouter)
  app.use("/product", postRouter);

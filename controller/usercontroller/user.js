@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv").config();
 const SECRET_KEY = process.env.secret_key;
 const UserMd = require("../../models/user");
-const transporter = require("../../utils/Nodemail");
+
 exports.signHandler = async (req, res) => {
   try {
     const { email, firstname, lastname, password } = req.body;
@@ -19,14 +18,7 @@ exports.signHandler = async (req, res) => {
     });
 
     if (createUser) {
-      // Set up email data
-      let mailOptions = {
-        from: process.env.Usermail,
-        to: `${createUser.email}`,
-        subject: "Welcome to our website",
-        text: "you Habve successfully created an account",
-        html: "<b>Hello world?</b>",
-      };
+      
       return res.json({ message: "User Created Successfully!!!", createUser });
     }
   } catch (err) {
@@ -53,8 +45,7 @@ exports.loginHandler = async (req, res) => {
           },
           SECRET_KEY
         );
-        res.cookie("token", token, {
-          // httpOnly: true,
+        res.cookie("token", token, {       
           maxAge: 3 * 60 * 1000,
         });
         return res.json({

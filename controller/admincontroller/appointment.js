@@ -98,10 +98,10 @@ exports.geRevenueSum = async (req, res) => {
 exports.getRevenueSumM = async (req, res) => {
     try {
         
-        // const startDate = moment().subtract(1, 'months').startOf('month').toDate();
-        // const endDate = moment().subtract(1, 'months').endOf('month').toDate();
-        const startDate = moment().startOf('month').toDate();
-        const endDate = moment().endOf('month').toDate();
+        const startDate = moment().subtract(1, 'months').startOf('month').toDate();
+        const endDate = moment().subtract(1, 'months').endOf('month').toDate();
+        // const startDate = moment().startOf('month').toDate();
+        // const endDate = moment().endOf('month').toDate();
         const totalRevenue = await Appointment.sum('Fees', {
             where: {
                 createdAt: {
@@ -138,10 +138,14 @@ exports.getTodayAppointments = async (req, res) => {
                 },
             },
         });
-
+        if (todayAppointments.length === 0) {
+            return res.status(200).json({
+                message: 'There are no appointments for today!!!',
+            });
+        }
         res.status(200).json({
             message: 'Appointments for Today',
-            appointments: todayAppointments || "There are no appointments for today!!!", 
+            appointments: todayAppointments 
         });
     } catch (error) {
         res.status(500).json({ error: error.message });

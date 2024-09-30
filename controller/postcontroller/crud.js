@@ -1,7 +1,8 @@
 
 const task = require("../../models/task")
 const mytask =require("../../models/mytask")
-
+const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Types;  
 
 
 exports.PostHandler = async(req,res)=>{
@@ -13,7 +14,6 @@ exports.PostHandler = async(req,res)=>{
         title,
         starttime,
         endtime
-    
     })
      
     if(cratoo){
@@ -28,7 +28,7 @@ exports.PostHandler = async(req,res)=>{
     
     }
     catch(error){
-        console.log("error",error)
+       return  console.log("error",error)
     }
     
     }
@@ -90,45 +90,101 @@ exports.ReadHandler=(req,res)=>{
 
 
 
-       exports.UpdateHandler =async (req,res)=>{
-            try{
+    //    exports.UpdateHandler =async (req,res)=>{
+    //         try{
                 
-                const{_id,title,starttime,endtime,completed}= req.body
-                console.log(req.body)
+    //             const{taskid,title,starttime,endtime,completed}= req.body
+    //             console.log(req.body)
                
             
-              if (!_id||!title || !starttime || !endtime || !completed ){
-                return res.status(400).json({ message: "Required fields are missing" });
-            }
-             const update= await mytask.findByIdAndUpdate(_id,{
-            title,
-            starttime,
-            endtime,
-            completed
-             })
-             if(update){
-              res.json("update ha gov baya")
+    //           if (!taskid||!title || !starttime || !endtime || !completed ){
+    //             return res.status(400).json({ message: "Required fields are missing" });
+    //         }
+           
+    //          const update= await mytask.findByIdAndUpdate(taskid,{
+    //         title,
+    //         starttime,
+    //         endtime,
+    //         completed
+    //          })
+    //          if(update){
+    //           res.json("update ha gov baya")
             
-             }
-             else{
-                res.json("khabar kya daleel chi gachanii chunea")
+    //          }
+    //          else{
+    //             res.json("khabar kya daleel chi gachanii chunea")
             
-             }
+    //          }
             
              
             
             
-            }
-            catch(error){
-            console.log("error ha chui baya",error)
+    //         }
+    //         catch(error){
+    //         console.log("error ha chui baya",error)
             
-            }
+    //         }
             
             
             
-            }
+    //         }
 
-
+   
+    
+    exports.UpdateHandler = async (req, res) => {
+        try {
+            const { taskid, title, starttime, endtime, completed } = req.body;
+    
+         
+            console.log(req.body);
+    
+          
+            if (!taskid || !title || !starttime || !endtime ) {
+                return res.status(400).json({ message: "Required fields are missing" });
+            }
+    
+          
+            if (!ObjectId.isValid(taskid)) {
+                return res.status(400).json({ message: "Invalid task ID" });
+            }
+    
+            
+            const completedBool = completed === 'true' || completed === true;
+    
+           
+            const update = await mytask.findByIdAndUpdate(
+                taskid,
+                {
+                    title,
+                    starttime,
+                    endtime,
+                    completed: completedBool
+                },
+                { new: true }  
+            );
+    
+           
+            if (update) {
+                return res.status(200).json({
+                    message: "Task updated successfully",
+                    updatedTask: update
+                });
+            } else {
+               
+                return res.status(404).json({
+                    message: "Task not found"
+                });
+            }
+    
+        } catch (error) {
+            console.error("Error occurred:", error);
+            return res.status(500).json({
+                message: "An internal server error occurred",
+                error: error.message
+            });
+        }
+    };
+    
 
 
 
@@ -142,7 +198,7 @@ exports.ReadHandler=(req,res)=>{
                 }
                 console.log(postId)
                 try{
-                const delid =await create.findByIdAndDelete(postId)
+                const delid =await mytask.findByIdAndDelete(postId)
                 if(delid){
                     res.json("Post Deleted as per Your wish")
                 }
