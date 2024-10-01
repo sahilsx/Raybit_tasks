@@ -7,7 +7,9 @@ getAppointmentcount,
 getConsultationHoursSum,
 geRevenueSum,
 getRevenueSumM,
-getTodayAppointments
+getTodayAppointments,
+updateAppointmentStatus,
+updateAppointmentStatusToCancel
 } = require("../controller/admincontroller/appointment");
 
 
@@ -19,4 +21,6 @@ AdminRoutes.get("/getConsultationHoursSum",getConsultationHoursSum);
 AdminRoutes.get("/geRevenueSum",geRevenueSum);
 AdminRoutes.get("/getRevenueSumM",getRevenueSumM);
 AdminRoutes.get("/getTodayAppointments",getTodayAppointments);
+AdminRoutes.put("/updateAppointmentStatus",updateAppointmentStatus);
+AdminRoutes.put("/CancelAppointmentStatus",updateAppointmentStatusToCancel);
 module.exports = AdminRoutes;

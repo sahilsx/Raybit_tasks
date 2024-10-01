@@ -151,3 +151,80 @@ exports.getTodayAppointments = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+
+
+
+
+
+
+
+
+exports.updateAppointmentStatus = async (req, res) => {
+  try {
+    const { appointmentId } = req.query; 
+    const appointment = await Appointment.findByPk(appointmentId);
+    console.log(appointment)
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+   
+    if (appointment.status === 'completed') {
+      return res.status(400).json({ message: 'Appointment is already completed' });
+    }
+
+   
+    appointment.status = 'completed';
+
+  
+    await appointment.save();
+
+  
+    res.status(200).json({
+      message: 'Appointment status updated to completed',
+      appointment,
+    });
+  } catch (error) {
+    console.error('Error updating appointment status:', error);
+    res.status(500).json({ message: 'An error occurred while updating appointment status' });
+  }
+};
+
+
+
+
+
+
+exports.updateAppointmentStatusToCancel = async (req, res) => {
+    try {
+      const { appointmentId } = req.query; 
+      const appointment = await Appointment.findByPk(appointmentId);
+      console.log(appointment)
+      if (!appointment) {
+        return res.status(404).json({ message: 'Appointment not found' });
+      }
+  
+     
+      if (appointment.status === 'Cancelled') {
+        return res.status(400).json({ message: 'Appointment is already Cancelled' });
+      }
+  
+     
+      appointment.status = 'Cancelled';
+  
+    
+      await appointment.save();
+  
+    
+      res.status(200).json({
+        message: 'Appointment status updated to completed',
+        appointment,
+      });
+    } catch (error) {
+      console.error('Error updating appointment status:', error);
+      res.status(500).json({ message: 'An error occurred while updating appointment status' });
+    }
+  };
+  
