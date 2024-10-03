@@ -3,18 +3,21 @@ const Appointment = require('../../models/apointment');
 const { Op } = require('sequelize');  
 const moment = require('moment');  
 const { Sequelize } = require('sequelize');
+const AppError = require('../../utils/error');
+const {catchAsync} = require('../../utils/catchAsync');
 
 
 
 
 
 
-
-
-exports.createAppointment = async (req, res) => {
-    try {
+exports.createAppointment = catchAsync( async (req, res,next) => {
+    
         const { userId, name,phone, date, ConsultationHours,timeSlot,Fees,Category } = req.body;
         console.log(req.body,"body");
+        if (!userId || !name || !phone || !date) {
+          return next(new AppError('Required fields are missing', 400)); 
+      }
         const appointment = new Appointment({
             userId,
             name,
@@ -28,23 +31,19 @@ exports.createAppointment = async (req, res) => {
         });
         await appointment.save();
         res.status(201).json({ message: 'Appointment Booked successfully', appointment });
-     }catch(err) {  
-        console.log(err);
-     }
-}
+    
+})
 
 
 
 
 
-exports.getAppointment = async (req, res) => {
-    try {
+exports.getAppointment =catchAsync(async (req, res) => {
+    
         const appointments = await Appointment.findAll();
         res.status(200).json({message: 'Appointment fetched successfully',appointments});
-    } catch (err) {
-        console.log(err);
-    }
-}
+    
+})
 
 
 
@@ -52,31 +51,27 @@ exports.getAppointment = async (req, res) => {
 
 
 
-exports.getAppointmentcount= async (req, res) => {
+exports.getAppointmentcount=catchAsync( async (req, res) => {
     const appointments = await Appointment.count();
     res.status(200).json({message: 'Appointment fetched successfully',appointments});
     
-}
+})
 
 
 
 
 
-exports.getConsultationHoursSum = async (req, res) => {
-    try {
+exports.getConsultationHoursSum = catchAsync(async (req, res) => {
+    
         const totalConsultationHours = await Appointment.sum('ConsultationHours', {
             where: {
             },
         });
-
         res.status(200).json({
             message: 'Total Consultation Hours',
             totalConsultationHours: totalConsultationHours || 0,  
         });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+});
 
 
 
@@ -85,8 +80,8 @@ exports.getConsultationHoursSum = async (req, res) => {
 
 
 
-exports.geRevenueSum = async (req, res) => {
-    try {
+exports.geRevenueSum =catchAsync(async (req, res) => {
+    
         const totalRevenue = await Appointment.sum('Fees', {
             where: {
             },
@@ -95,11 +90,8 @@ exports.geRevenueSum = async (req, res) => {
         res.status(200).json({
             message: 'Total Revenue',
             totalConsultationHours: totalRevenue  || 0,  
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+        })
+});
 
 
 
@@ -114,8 +106,8 @@ exports.geRevenueSum = async (req, res) => {
 
 
 
-exports.getRevenueSumM = async (req, res) => {
-    try {
+exports.getRevenueSumM =catchAsync(async (req, res) => {
+    
         
         const startDate = moment().subtract(1, 'months').startOf('month').toDate();
         const endDate = moment().subtract(1, 'months').endOf('month').toDate();
@@ -133,10 +125,7 @@ exports.getRevenueSumM = async (req, res) => {
             message: 'Total Revenue for Last Month',
             totalRevenue: totalRevenue || 0,  
         });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+});
 
 
 
@@ -147,8 +136,8 @@ exports.getRevenueSumM = async (req, res) => {
 
 
 
-exports.getTodayAppointments = async (req, res) => {
-    try {
+exports.getTodayAppointments =catchAsync(async (req, res) => {
+   
        
         const startDate = moment().startOf('day').toDate();
         const endDate = moment().endOf('day').toDate();
@@ -169,10 +158,7 @@ exports.getTodayAppointments = async (req, res) => {
             message: 'Appointments for Today',
             appointments: todayAppointments 
         });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+});
 
 
 
@@ -183,20 +169,19 @@ exports.getTodayAppointments = async (req, res) => {
 
 
 
-exports.updateAppointmentStatus = async (req, res) => {
-  try {
+exports.updateAppointmentStatus =catchAsync(async (req, res) => {
+  
     const { appointmentId } = req.query; 
     const appointment = await Appointment.findByPk(appointmentId);
     console.log(appointment)
-    if (!appointment) {
-      return res.status(404).json({ message: 'Appointment not found' });
-    }
-
    
-    if (appointment.status === 'Completed') {
-      return res.status(400).json({ message: 'Appointment is already completed' });
-    }
+  if (!appointment) {
+    return next(new AppError('Appointment not found', 404));
+  }
 
+  if (appointment.status === 'Completed') {
+    return next(new AppError('Appointment is already completed', 400));
+  }
    
     appointment.status = 'Completed';
 
@@ -208,11 +193,7 @@ exports.updateAppointmentStatus = async (req, res) => {
       message: 'Appointment status updated to completed',
       appointment,
     });
-  } catch (error) {
-    console.error('Error updating appointment status:', error);
-    res.status(500).json({ message: 'An error occurred while updating appointment status' });
-  }
-};
+});
 
 
 
@@ -223,19 +204,19 @@ exports.updateAppointmentStatus = async (req, res) => {
 
 
 
-exports.updateAppointmentStatusToCancel = async (req, res) => {
-    try {
+exports.updateAppointmentStatusToCancel =catchAsync(async (req, res) => {
+    
       const { appointmentId } = req.query; 
       const appointment = await Appointment.findByPk(appointmentId);
       console.log(appointment)
-      if (!appointment) {
-        return res.status(404).json({ message: 'Appointment not found' });
-      }
-  
-     
-      if (appointment.status === 'Cancelled') {
-        return res.status(400).json({ message: 'Appointment is already Cancelled' });
-      }
+      
+  if (!appointment) {
+    return next(new AppError('Appointment not found', 404));
+  }
+
+  if (appointment.status === 'Cancelled') {
+    return next(new AppError('Appointment is already Cancelled', 400));
+  }
   
      
       appointment.status = 'Cancelled';
@@ -245,14 +226,10 @@ exports.updateAppointmentStatusToCancel = async (req, res) => {
   
     
       res.status(200).json({
-        message: 'Appointment status updated to completed',
+        message: 'Appointment status updated to Cancelled',
         appointment,
       });
-    } catch (error) {
-      console.error('Error updating appointment status:', error);
-      res.status(500).json({ message: 'An error occurred while updating appointment status' });
-    }
-  };
+  });
   
 
 
@@ -281,8 +258,7 @@ const getStartOfDay = (date) => {
 
 
 
-exports.getWeeklyConsultationHours = async (req, res) => {
-  try {
+exports.getWeeklyConsultationHours =catchAsync(async (req, res) => {
     const today = new Date();
     const lastWeek = new Date(today);
 
@@ -318,11 +294,7 @@ exports.getWeeklyConsultationHours = async (req, res) => {
       data: dailyConsultations,
     });
 
-  } catch (error) {
-    console.error('Error fetching consultation hours:', error);
-    res.status(500).json({ message: 'An error occurred while fetching consultation hours.' });
-  }
-};
+});
 
 
 
@@ -337,8 +309,7 @@ exports.getWeeklyConsultationHours = async (req, res) => {
 
 
 
-exports.getMonthlyConsultationHours = async (req, res) => {
-  try {
+exports.getMonthlyConsultationHours =catchAsync(async (req, res) => {
     const today = new Date();
     const lastMonth = new Date(today);
 
@@ -374,12 +345,7 @@ exports.getMonthlyConsultationHours = async (req, res) => {
       message: 'Consultation hours for the last month',
       data: dailyConsultations,
     });
-
-  } catch (error) {
-    console.error('Error fetching consultation hours:', error);
-    res.status(500).json({ message: 'An error occurred while fetching consultation hours.' });
-  }
-};
+});
 
 
 
@@ -396,8 +362,7 @@ exports.getMonthlyConsultationHours = async (req, res) => {
 
 
 
-exports.getWeeklyRevenue = async (req, res) => {
-    try {
+exports.getWeeklyRevenue =catchAsync(async (req, res) => {
       const today = new Date();
       const lastWeek = new Date(today);
   
@@ -433,11 +398,7 @@ exports.getWeeklyRevenue = async (req, res) => {
         data: dailytotalRevenue,
       });
   
-    } catch (error) {
-      console.error('Error fetching consultation hours:', error);
-      res.status(500).json({ message: 'An error occurred while fetching consultation hours.' });
-    }
-  };
+  });
   
 
 
@@ -451,8 +412,8 @@ exports.getWeeklyRevenue = async (req, res) => {
 
 
 
-  exports.getMonthlyRevenue = async (req, res) => {
-    try {
+  exports.getMonthlyRevenue =catchAsync(async (req, res) => {
+  
       const today = new Date();
       const lastMonth = new Date(today);
   
@@ -488,12 +449,7 @@ exports.getWeeklyRevenue = async (req, res) => {
         message: 'Total revenue for the last month',
         data: dailytotalRevevue ,
       });
-  
-    } catch (error) {
-      console.error('Error fetching consultation hours:', error);
-      res.status(500).json({ message: 'An error occurred while fetching consultation hours.' });
-    }
-  };
+  });
 
 
 
@@ -510,8 +466,7 @@ exports.getWeeklyRevenue = async (req, res) => {
 
 
 
-exports.getTodaysConsultationHours = async (req, res) => {
-  try {
+exports.getTodaysConsultationHours =catchAsync(async (req, res) => {
     const today = new Date();
     
     
@@ -541,12 +496,7 @@ exports.getTodaysConsultationHours = async (req, res) => {
       message: 'Consultation hours for today',
       data: totalDuration,
     });
-
-  } catch (error) {
-    console.error('Error fetching consultation hours:', error);
-    res.status(500).json({ message: 'An error occurred while fetching consultation hours.' });
-  }
-};
+});
 
 
 
@@ -556,8 +506,7 @@ exports.getTodaysConsultationHours = async (req, res) => {
 
 
 
-exports.getTodaysRevenue = async (req, res) => {
-    try {
+exports.getTodaysRevenue =catchAsync(async (req, res) => {
       const today = new Date();
       
       
@@ -587,10 +536,5 @@ exports.getTodaysRevenue = async (req, res) => {
         message: 'Total revenue for today',
         data: totalRevenue,
       });
-  
-    } catch (error) {
-      console.error('Error fetching consultation hours:', error);
-      res.status(500).json({ message: 'An error occurred while fetching consultation hours.' });
-    }
-  };
+  });
   
