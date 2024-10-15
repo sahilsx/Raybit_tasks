@@ -3,8 +3,10 @@ const { Op } = require("sequelize");
 const moment = require("moment");
 const { Sequelize } = require("sequelize");
 const AppError = require("../../utils/error");
+const axios = require("axios");
 const { catchAsync } = require("../../utils/catchAsync");
 const Razorpay = require("razorpay");
+const crypto = require("crypto");
 require("dotenv").config();
 exports.createAppointment = catchAsync(async (req, res, next) => {
   const {
@@ -475,5 +477,96 @@ exports.fetchpayment = catchAsync(async (req, res) => {
     method: response.method,
     amount: response.amount,
     currency: response.currency,
+  });
+});
+
+const generateZoomSignature = (apiKey, apiSecret, meetingNumber, role) => {
+  const timestamp = new Date().getTime() - 30000;
+  const msg = Buffer.from(
+    `${apiKey}${meetingNumber}${timestamp}${role}`
+  ).toString("base64");
+  const hash = crypto
+    .createHmac("sha256", apiSecret)
+    .update(msg)
+    .digest("base64");
+  const signature = Buffer.from(
+    `${apiKey}.${meetingNumber}.${timestamp}.${role}.${hash}`
+  ).toString("base64");
+
+  return signature;
+};
+
+exports.createZoomMeeting = catchAsync(async (req, res, next) => {
+  const { meetingNumber, userName, userEmail } = req.body;
+
+  // Validate request body
+  if (!meetingNumber || !userName || !userEmail) {
+    return next(new AppError("Required fields are missing", 400));
+  }
+
+  const zoomApiKey = process.env.ZOOM_API_KEY;
+  const zoomApiSecret = process.env.ZOOM_API_SECRET;
+
+  const role = 1;
+
+  const signature = generateZoomSignature(
+    zoomApiKey,
+    zoomApiSecret,
+    meetingNumber,
+    role
+  );
+
+  res.status(200).json({
+    message: "Zoom Meeting Created",
+    meetingNumber,
+    userName,
+    userEmail,
+    signature,
+    zoomApiKey,
+  });
+});
+
+exports.joinZoomMeeting = catchAsync(async (req, res) => {
+  const { meetingNumber, userName, signature } = req.body;
+
+  if (!meetingNumber || !userName || !signature) {
+    return res.status(400).json({
+      message: "Missing meeting information",
+    });
+  }
+
+  const zoomApiKey = process.env.ZOOM_API_KEY;
+
+  Zoom.preLoadWasm();
+  Zoom.prepareJssdk();
+
+  const meetingConfig = {
+    apiKey: zoomApiKey,
+    meetingNumber: meetingNumber,
+    userName: userName,
+    signature: signature,
+    password: "",
+    error(res) {
+      console.log(res);
+    },
+    success() {
+      console.log("Joining Zoom meeting successful");
+    },
+  };
+
+  Zoom.init({
+    leaveUrl: "http://localhost:4000",
+    isSupportAV: true,
+    success() {
+      Zoom.join(meetingConfig);
+    },
+    error(err) {
+      console.log(err);
+    },
+  });
+
+  res.status(200).json({
+    message: "Joining Zoom meeting",
+    meetingConfig,
   });
 });

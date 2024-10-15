@@ -19,6 +19,8 @@ const {
   CreatePaymentGateway,
   fetchpayment,
   capturePayment,
+  createZoomMeeting,
+  // joinZoomMeeting,
 } = require("../controller/admincontroller/appointment");
 
 AdminRoutes.post("/createAppointment", createAppointment);
@@ -39,4 +41,7 @@ AdminRoutes.get("/getTodaysRevenue", getTodaysRevenue);
 AdminRoutes.post("/CreatePaymentGateway", CreatePaymentGateway);
 AdminRoutes.get("/getPaymentGateway/:paymentid", fetchpayment);
 AdminRoutes.post("/capturePayment", capturePayment);
+AdminRoutes.post("/createZoomMeeting", createZoomMeeting);
+// AdminRoutes.post("/joinZoomMeeting", joinZoomMeeting);
+
 module.exports = AdminRoutes;
